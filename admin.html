@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickCart Admin – Deal Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0d0d;--ink2:#444;--ink3:#888;--ink4:#bbb;
+  --bg:#f8f8f6;--card:#fff;--border:#e4e4e0;
+  --orange:#ff4500;--orange2:#e03c00;--green:#00875a;--red:#c9001b;
+  --r:10px;--shadow:0 2px 12px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+button,input,select,textarea{font-family:inherit;}
+
+nav{background:var(--ink);position:sticky;top:0;z-index:100;}
+.nav-in{max-width:1380px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:54px;}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.logo span{color:var(--orange);}
+.logo small{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#555;margin-left:10px;}
+.back{font-size:12px;font-weight:600;color:#fff;background:none;border:1.5px solid #333;border-radius:7px;padding:7px 16px;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block;}
+.back:hover{background:#fff;color:var(--ink);}
+
+.wrap{display:grid;grid-template-columns:210px 1fr;max-width:1380px;margin:22px auto;min-height:calc(100vh-76px);}
+.sidebar{background:var(--card);border-radius:var(--r) 0 0 var(--r);border:1.5px solid var(--border);align-self:start;position:sticky;top:76px;overflow:hidden;}
+.sb{display:flex;align-items:center;gap:9px;padding:12px 18px;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;transition:.15s;border-left:3px solid transparent;}
+.sb:hover{background:#f9f9f7;color:var(--ink);}
+.sb.on{color:var(--ink);font-weight:700;border-left-color:var(--orange);background:#fff8f5;}
+.sb-ico{font-size:14px;width:16px;text-align:center;}
+
+main{background:var(--card);border-radius:0 var(--r) var(--r) 0;border:1.5px solid var(--border);border-left:none;padding:30px 34px;}
+.panel{display:none;}
+.panel.on{display:block;}
+.ptitle{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;margin-bottom:3px;letter-spacing:-.3px;}
+.psub{font-size:13px;color:var(--ink3);margin-bottom:26px;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.stat{background:var(--bg);border-radius:var(--r);padding:18px;border-top:3px solid var(--c,var(--orange));}
+.stat-l{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:7px;}
+.stat-v{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;}
+.stat-h{font-size:11px;color:var(--ink4);margin-top:3px;}
+
+.box{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:18px;}
+.box-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);}
+.box-hd h3{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;}
+.sinput{border:1.5px solid var(--border);border-radius:7px;padding:7px 13px;font-size:12px;color:var(--ink);outline:none;width:220px;transition:.2s;}
+.sinput:focus{border-color:var(--orange);}
+
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.fg-full{grid-column:1/-1;}
+.ff label{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:4px;}
+.ff input,.ff select,.ff textarea{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--ink);outline:none;transition:.2s;background:var(--card);}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--orange);}
+.ff .hint{font-size:10px;color:var(--ink4);margin-top:3px;}
+.acts{display:flex;gap:8px;flex-wrap:wrap;}
+
+.btn{font-size:12px;font-weight:600;border:none;border-radius:7px;padding:9px 20px;cursor:pointer;transition:.2s;letter-spacing:.01em;}
+.btn-orange{background:var(--orange);color:#fff;}
+.btn-orange:hover{background:var(--orange2);}
+.btn-grey{background:var(--bg);color:var(--ink3);border:1.5px solid var(--border);}
+.btn-grey:hover{color:var(--ink);border-color:var(--ink);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:#006644;}
+.btn-red{background:var(--card);color:var(--red);border:1.5px solid var(--red);}
+.btn-red:hover{background:var(--red);color:#fff;}
+.btn-sm{padding:5px 11px;font-size:11px;}
+
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);padding:10px 13px;text-align:left;background:#fafaf8;border-bottom:1px solid var(--border);}
+td{padding:10px 13px;font-size:12px;border-bottom:1px solid #f5f5f3;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafaf8;}
+.td-img{width:38px;height:38px;border-radius:6px;object-fit:contain;background:var(--bg);}
+.bdg{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block;}
+.bdg-paid{background:#e6f9f0;color:var(--green);}
+.bdg-pending{background:#fff3cd;color:#856404;}
+.sl{font-size:11px;color:var(--orange);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;display:inline-block;}
+.sl:hover{text-decoration:underline;}
+.empty-row td{text-align:center;color:var(--ink4);padding:44px;font-size:13px;}
+
+.sc-box{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px;}
+.sc-box h3{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;margin-bottom:5px;}
+.sc-box p{font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:16px;}
+.sc-row{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;}
+.sc-row .ff{flex:1;min-width:160px;}
+.log{background:var(--ink);color:#777;font-family:monospace;font-size:11px;border-radius:8px;padding:13px;min-height:80px;max-height:170px;overflow-y:auto;margin-top:13px;line-height:1.9;}
+.log .ok{color:#4caf50;}.log .err{color:#ef5350;}.log .inf{color:#42a5f5;}
+.prog{background:var(--border);border-radius:4px;height:4px;margin-top:8px;overflow:hidden;}
+.prog-bar{height:100%;background:var(--orange);border-radius:4px;width:0;transition:width .3s;}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;}
+.dot-g{background:var(--green);}.dot-y{background:#ffc107;}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:8px;z-index:9999;opacity:0;transition:.3s;white-space:nowrap;pointer-events:none;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr;margin:0;}
+  .sidebar{border-radius:0;position:static;display:flex;overflow-x:auto;border-bottom:1.5px solid var(--border);}
+  .sb{padding:11px 15px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap;}
+  .sb.on{border-left-color:transparent;border-bottom-color:var(--orange);}
+  main{border-radius:0;border-left:1.5px solid var(--border);padding:18px 14px;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .fg{grid-template-columns:1fr;}
+  .fg-full{grid-column:auto;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-in">
+    <div class="logo"><span>Quick</span>Cart <small>Admin</small></div>
+    <a href="index.html" class="back">← Back to Store</a>
+  </div>
+</nav>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="sb on"  onclick="go('dashboard',this)"><span class="sb-ico">📊</span> Dashboard</div>
+    <div class="sb"     onclick="go('deals',this)">    <span class="sb-ico">🔥</span> Deals</div>
+    <div class="sb"     onclick="go('pending',this)">  <span class="sb-ico">⏳</span> Pending <span id="pending-badge" style="background:#ffc107;color:#000;border-radius:20px;padding:2px 8px;margin-left:8px;font-size:10px;">0</span></div>
+    <div class="sb"     onclick="go('orders',this)">   <span class="sb-ico">📦</span> Orders</div>
+    <div class="sb"     onclick="go('scraper',this)">  <span class="sb-ico">🤖</span> Scraper</div>
+    <div class="sb"     onclick="go('settings',this)"> <span class="sb-ico">⚙️</span> Settings</div>
+  </aside>
+  <main>
+
+    <!-- DASHBOARD -->
+    <div class="panel on" id="p-dashboard">
+      <div class="ptitle">Dashboard</div><div class="psub">Live QuickCart overview</div>
+      <div class="stats">
+        <div class="stat" style="--c:var(--orange)"><div class="stat-l">Live Deals</div><div class="stat-v" id="s-prod">0</div><div class="stat-h">In database</div></div>
+        <div class="stat" style="--c:var(--green)"> <div class="stat-l">Revenue</div>   <div class="stat-v" id="s-rev">₦0</div><div class="stat-h">All time</div></div>
+        <div class="stat" style="--c:#2196f3">      <div class="stat-l">Orders</div>    <div class="stat-v" id="s-ord">0</div><div class="stat-h">Paid</div></div>
+        <div class="stat" style="--c:#9c27b0">      <div class="stat-l">My Profit</div><div class="stat-v" id="s-prof">₦0</div><div class="stat-h">Net</div></div>
+      </div>
+      <div class="box">
+        <div class="box-hd"><h3>Recent Orders</h3></div>
+        <table><thead><tr><th>Ref</th><th>Customer</th><th>Items</th><th>Total</th><th>Profit</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="dash-ord"><tr class="empty-row"><td colspan="7">Loading…</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- DEALS -->
+    <div class="panel" id="p-deals">
+      <div class="ptitle">Deals</div><div class="psub">Add, edit and remove deals. Store URL powers the "View Deal" button.</div>
+      <div class="box" style="padding:22px;">
+        <h3 id="ftitle" style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;">Add New Deal</h3>
+        <div class="fg">
+          <div class="ff"><label>Product Name *</label><input id="f-name" placeholder="e.g. iPhone 17 Pro Max" type="text"></div>
+          <div class="ff"><label>Brand *</label><input id="f-brand" placeholder="e.g. Apple, Nike, Samsung" type="text"></div>
+          <div class="ff"><label>Category *</label>
+            <select id="f-cat"><option value="">Select</option>
+              <option value="Sneakers">👟 Sneakers</option><option value="Smartphones">📱 Smartphones</option>
+              <option value="Laptops">💻 Laptops</option><option value="Gaming">🎮 Gaming</option>
+              <option value="Electronics">🔌 Electronics</option>
+            </select>
+          </div>
+          <div class="ff"><label>Deal Price (₦) *</label><input id="f-price" placeholder="89500" type="number" min="0"></div>
+          <div class="ff"><label>Original Price (₦)</label><input id="f-orig" placeholder="115000" type="number" min="0"><p class="hint">Shows discount %</p></div>
+          <div class="ff"><label>Store *</label>
+            <select id="f-store"><option value="">Select</option>
+              <option>Jumia</option><option>Konga</option><option>Slot</option>
+              <option>3C Hub</option><option>Garmspot</option><option>Jiji</option><option>Other</option>
+            </select>
+          </div>
+          <div class="ff"><label>Store URL *</label><input id="f-url" placeholder="https://jumia.com.ng/..." type="url"><p class="hint">Where "View Deal" links</p></div>
+          <div class="ff"><label>Image URL</label><input id="f-img" placeholder="https://..."></div>
+          <div class="ff"><label>Tag</label>
+            <select id="f-tag"><option value="">None</option><option value="HOT">🔥 HOT</option>
+              <option value="NEW">✨ NEW</option><option value="LIMITED">⚡ LIMITED</option><option value="SALE">💰 SALE</option>
+            </select>
+          </div>
+          <div class="ff"><label>Sizes (comma-sep, optional)</label><input id="f-sizes" placeholder="40,41,42 or 128GB,256GB"></div>
+          <div class="ff"><label>Quantity</label><input id="f-qty" placeholder="10" type="number" min="0"></div>
+        </div>
+        <input type="hidden" id="f-eid">
+        <div class="acts">
+          <button class="btn btn-orange" onclick="saveDeal()">💾 Save Deal</button>
+          <button class="btn btn-grey"   onclick="clearForm()">✕ Clear</button>
+        </div>
+      </div>
+      
+      <!-- PENDING DEALS SECTION -->
+      <div class="box" style="margin-top:20px; border-color:#ffc107;">
+        <div class="box-hd">
+          <h3>⏳ Pending User Submissions</h3>
+          <span class="bdg" style="background:#ffc107; color:#000; padding:4px 12px; border-radius:20px; font-size:11px;" id="pending-count">0</span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th><th>Store</th><th>Price</th><th>Submitted</th><th>Email</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pending-tb">
+              <tr><td colspan="6" class="empty-row">No pending deals</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="box-hd"><h3>All Deals (<span id="pcnt">0</span>)</h3>
+          <input class="sinput" id="psearch" placeholder="Search deals…" oninput="filterProds()" type="text">
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Img</th><th>Name</th><th>Cat</th><th>Brand</th><th>Store</th><th>Price</th><th>Original</th><th>Disc</th><th>URL</th><th>Actions</th></tr></thead>
+            <tbody id="prod-tb"><tr class="empty-row"><td colspan="10">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENDING PANEL (separate view) -->
+    <div class="panel" id="p-pending">
+      <div class="ptitle">Pending Submissions</div><div class="psub">Review user-submitted deals</div>
+      <div class="box">
+        <table>
+          <thead>
+            <tr><th>Product</th><th>Brand</th><th>Category</th><th>Store</th><th>Price</th><th>Submitted</th><th>Email</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="pending-full-tb">
+            <tr><td colspan="8" class="empty-row">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="panel" id="p-orders">
+      <div class="ptitle">Orders</div><div class="psub">Customer orders and Paystack records</div>
+      <div class="box">
+        <div class="box-hd"><h3>All Orders</h3>
+          <input class="sinput" id="osearch" placeholder="Search orders…" oninput="filterOrds()" type="text">
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Ref</th><th>Customer</th><th>Email</th><th>Phone</th><th>Items</th><th>Total</th><th>Profit</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody id="ord-tb"><tr class="empty-row"><td colspan="9">No orders yet</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCRAPER -->
+    <div class="panel" id="p-scraper">
+      <div class="ptitle">Scraper</div><div class="psub">Seed and manage your deals database</div>
+
+      <div class="sc-box" style="border-color:var(--orange);background:#fff8f5;">
+        <h3 style="color:var(--orange);">🚀 Seed All 60+ Deals — One Click</h3>
+        <p>Instantly writes all 60+ verified deals (with real Nigerian market prices + store URLs) to Firebase. Covers Sneakers, Phones, Laptops, Gaming and Electronics across Jumia, Konga, Slot, 3C Hub and Garmspot.</p>
+        <button class="btn btn-orange" onclick="seedAll()" style="font-size:14px;padding:11px 28px;">▶ Seed All Deals Now</button>
+        <div class="prog"><div class="prog-bar" id="seed-prog"></div></div>
+        <div class="log" id="seed-log"><span class="inf">ℹ Click "Seed All Deals Now" to populate Firebase with 60+ real deals.</span></div>
+      </div>
+
+      <div class="sc-box">
+        <h3>⚡ Import by Category</h3>
+        <p>Import a subset of deals filtered by category.</p>
+        <div class="sc-row">
+          <div class="ff" style="flex:2"><label>Store URL</label><input id="sc-url" placeholder="https://www.jumia.com.ng/…" type="text"></div>
+          <div class="ff" style="flex:.6"><label>Limit</label>
+            <select id="sc-lim"><option value="10">10</option><option value="20" selected>20</option><option value="all">All</option></select>
+          </div>
+          <div class="ff" style="flex:.8"><label>Category</label>
+            <select id="sc-cat"><option value="all">All</option><option>Sneakers</option><option>Smartphones</option><option>Laptops</option><option>Gaming</option><option>Electronics</option></select>
+          </div>
+          <button class="btn btn-orange" onclick="runScrape()" style="height:38px;align-self:flex-end;">▶ Run</button>
+        </div>
+        <div class="prog"><div class="prog-bar" id="sc-prog"></div></div>
+        <div class="log" id="sc-log"><span class="inf">ℹ Ready.</span></div>
+      </div>
+
+      <div class="sc-box">
+        <h3>📋 Bulk JSON Import</h3>
+        <p>Paste a JSON array. Required: name, brand, category, price, store, storeUrl.</p>
+        <div class="ff">
+          <label>JSON Data</label>
+          <textarea id="bulk-json" rows="5" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:11px;font-family:monospace;font-size:11px;outline:none;resize:vertical;background:var(--card);"
+            placeholder='[{"name":"iPhone 17","brand":"Apple","category":"Smartphones","price":2720000,"originalPrice":3100000,"store":"Jumia","storeUrl":"https://jumia.com.ng/…","tag":"HOT"}]'></textarea>
+        </div>
+        <button class="btn btn-orange" onclick="bulkImport()" style="margin-top:11px;">📥 Import</button>
+      </div>
+
+      <div class="sc-box">
+        <h3>⏱ Status</h3>
+        <div style="display:flex;gap:22px;flex-wrap:wrap;margin-top:6px;">
+          <span><span class="dot dot-g"></span><span style="font-size:13px;color:var(--ink3)">Storefront refresh: <b style="color:var(--ink)">Every 15min</b></span></span>
+          <span><span class="dot dot-y"></span><span style="font-size:13px;color:var(--ink3)">USD→NGN rate: <b style="color:var(--ink)">₦1,392 / $1</b></span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="panel" id="p-settings">
+      <div class="ptitle">Settings</div><div class="psub">Platform configuration</div>
+      <div class="box" style="padding:22px;">
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;">Jumia Affiliate</h3>
+        <div class="ff"><label>Your Jumia Affiliate ID</label><input type="text" id="jumia-affiliate" value="" placeholder="e.g. yourname123"></div>
+        <button class="btn btn-orange" onclick="saveAffiliateId()">Save Affiliate ID</button>
+        <p style="font-size:11px;color:var(--ink4);margin-top:8px;">This will be added to all Jumia links automatically</p>
+      </div>
+      <div class="box" style="padding:22px;">
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;">Pricing</h3>
+        <div class="fg">
+          <div class="ff"><label>Currency</label><select><option>NGN — Nigerian Naira (₦)</option></select></div>
+          <div class="ff"><label>USD → NGN Rate</label><input type="number" id="usd-rate" value="1392"></div>
+        </div>
+        <button class="btn btn-orange" onclick="saveRate()">Save</button>
+      </div>
+      <div class="box" style="padding:22px;margin-top:14px;">
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;">Paystack</h3>
+        <div class="ff"><label>Public Key</label><input type="text" id="paystack-key" value="pk_live_1d3267660c9ae41a643c52a2d04493ea4e0e98ca"></div>
+        <p style="font-size:11px;color:var(--ink4);margin-top:8px;">⚠️ Never expose your secret key in frontend code.</p>
+        <button class="btn btn-orange" onclick="savePaystack()">Save</button>
+      </div>
+      <div class="box" style="padding:22px;margin-top:14px;">
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;margin-bottom:16px;">Platform Info</h3>
+        <div class="fg">
+          <div class="ff"><label>Platform Name</label><input type="text" id="platform-name" value="QuickCart"></div>
+          <div class="ff"><label>Contact Email</label><input type="email" id="contact-email" placeholder="admin@quickcart.ng"></div>
+          <div class="ff fg-full"><label>Tagline</label><input type="text" id="tagline" value="Nigeria's smartest deal finder. Compare prices. Save more."></div>
+        </div>
+        <button class="btn btn-orange" onclick="savePlatform()">Save</button>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const DB="https://sneakerai-c96f0-default-rtdb.firebaseio.com/products";
+const PENDING_DB="https://sneakerai-c96f0-default-rtdb.firebaseio.com/pending-deals";
+const ORDERS_DB="https://sneakerai-c96f0-default-rtdb.firebaseio.com/orders";
+const CONFIG_DB="https://sneakerai-c96f0-default-rtdb.firebaseio.com/config";
+const USD_NGN=1392;
+let prods={},orders={},pending={};
+
+function go(n,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb').forEach(s=>s.classList.remove('on'));
+  document.getElementById('p-'+n).classList.add('on');el.classList.add('on');
+  if(n==='dashboard')loadDash();
+  if(n==='deals'){loadProds();loadPending();}
+  if(n==='pending')loadPendingFull();
+  if(n==='orders')loadOrds();
+}
+function toNGN(n){const v=Number(n)||0;return v<2000?Math.round(v*USD_NGN):v;}
+function fmt(n){return '₦'+Math.round(n).toLocaleString('en-NG');}
+function dp(o,c){if(!o||o<=c)return 0;return Math.round(((o-c)/o)*100);}
+function catIco(c){return {Sneakers:'👟',Smartphones:'📱',Laptops:'💻',Gaming:'🎮',Electronics:'🔌'}[c]||'🛒';}
+
+async function loadDash(){
+  await Promise.all([fProds(),fOrds()]);
+  const ov=Object.values(orders);
+  document.getElementById('s-rev').textContent=fmt(ov.reduce((s,o)=>s+(o.total||0),0));
+  document.getElementById('s-prof').textContent=fmt(ov.reduce((s,o)=>s+(o.myProfit||0),0));
+  document.getElementById('s-ord').textContent=ov.length;
+  document.getElementById('s-prod').textContent=Object.keys(prods).length;
+  const recent=ov.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,8);
+  document.getElementById('dash-ord').innerHTML=!recent.length
+    ?'<tr class="empty-row"><td colspan="7">No orders yet</td></tr>'
+    :recent.map(o=>`<tr>
+      <td style="font-size:10px;color:var(--ink4);font-family:monospace">${(o.ref||'').slice(0,12)}…</td>
+      <td style="font-weight:600">${o.customerName||'—'}</td>
+      <td>${(o.items||[]).length}</td>
+      <td style="font-weight:700">${fmt(o.total||0)}</td>
+      <td style="color:var(--green);font-weight:700">${fmt(o.myProfit||0)}</td>
+      <td><span class="bdg bdg-paid">Paid</span></td>
+      <td style="font-size:11px;color:var(--ink4)">${o.date?new Date(o.date).toLocaleDateString('en-NG'):'—'}</td>
+    </tr>`).join('');
+}
+
+async function fProds(){const r=await fetch(DB+'.json').catch(()=>({json:()=>({})}));prods=await r.json()||{};}
+async function loadProds(){await fProds();renderProds(prods);}
+function renderProds(data){
+  const keys=Object.keys(data||{});
+  document.getElementById('pcnt').textContent=keys.length;
+  document.getElementById('prod-tb').innerHTML=!keys.length
+    ?'<tr class="empty-row"><td colspan="10">No deals. Use Scraper → Seed All Deals.</td></tr>'
+    :keys.map(k=>{
+        const p=data[k],base=toNGN(p.price),orig=p.originalPrice?toNGN(p.originalPrice):0,d=dp(orig,base);
+        return `<tr>
+          <td>${p.image?`<img class="td-img" src="${p.image}" onerror="this.style.display='none'">`:catIco(p.category)}</td>
+          <td><strong>${p.name||''}</strong>${p.tag?`<span class="bdg" style="background:#fff3e0;color:#e65100;margin-left:5px;font-size:10px">${p.tag}</span>`:''}</td>
+          <td style="color:var(--ink3)">${p.category||'—'}</td>
+          <td style="color:var(--ink3)">${p.brand||'—'}</td>
+          <td style="font-weight:600;color:var(--orange)">${p.store||'—'}</td>
+          <td style="font-weight:700">${fmt(base)}</td>
+          <td style="color:var(--ink4);text-decoration:line-through">${orig>0?fmt(orig):'—'}</td>
+          <td>${d>0?`<span style="background:#e6f9f0;color:var(--green);font-weight:700;padding:2px 6px;border-radius:4px;font-size:10px">-${d}%</span>`:'—'}</td>
+          <td>${p.storeUrl?`<a class="sl" href="${p.storeUrl}" target="_blank">Open ↗</a>`:'<span style="color:var(--ink4)">—</span>'}</td>
+          <td style="display:flex;gap:4px">
+            <button class="btn btn-grey btn-sm" onclick="editProd('${k}')">Edit</button>
+            <button class="btn btn-red  btn-sm" onclick="delProd('${k}')">Del</button>
+          </td>
+        </tr>`;
+      }).join('');
+}
+function filterProds(){
+  const q=document.getElementById('psearch').value.toLowerCase(),f={};
+  Object.keys(prods).forEach(k=>{const p=prods[k];if((p.name+p.brand+p.category+p.store||'').toLowerCase().includes(q))f[k]=p;});
+  renderProds(f);
+}
+async function saveDeal(){
+  const name=document.getElementById('f-name').value.trim(),brand=document.getElementById('f-brand').value.trim(),
+        cat=document.getElementById('f-cat').value,price=Number(document.getElementById('f-price').value),
+        orig=Number(document.getElementById('f-orig').value)||null,store=document.getElementById('f-store').value,
+        url=document.getElementById('f-url').value.trim(),qty=Number(document.getElementById('f-qty').value)||0,
+        szr=document.getElementById('f-sizes').value,img=document.getElementById('f-img').value.trim(),
+        tag=document.getElementById('f-tag').value,eid=document.getElementById('f-eid').value;
+  if(!name||!brand||!cat||!price||!store){toast('⚠️ Fill Name, Brand, Category, Price, Store');return;}
+  const sizes=szr?szr.split(',').map(s=>s.trim()).filter(Boolean):[];
+  const id=eid||`${cat}-${brand}-${name}`.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9-]/g,'');
+  try{
+    await fetch(`${DB}/${id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,brand,category:cat,price,originalPrice:orig,store,storeUrl:url,quantity:qty,sizes,image:img,tag,lastUpdated:new Date().toISOString()})});
+    toast(eid?'✅ Updated!':'✅ Deal added!');clearForm();loadProds();
+  }catch(e){toast('❌ Save failed');}
+}
+function editProd(k){
+  const p=prods[k];
+  document.getElementById('f-name').value=p.name||'';document.getElementById('f-brand').value=p.brand||'';
+  document.getElementById('f-cat').value=p.category||'';document.getElementById('f-price').value=p.price||'';
+  document.getElementById('f-orig').value=p.originalPrice||'';document.getElementById('f-store').value=p.store||'';
+  document.getElementById('f-url').value=p.storeUrl||'';document.getElementById('f-qty').value=p.quantity||'';
+  document.getElementById('f-sizes').value=Array.isArray(p.sizes)?p.sizes.join(','):(p.sizes||'');
+  document.getElementById('f-img').value=p.image||'';document.getElementById('f-tag').value=p.tag||'';
+  document.getElementById('f-eid').value=k;document.getElementById('ftitle').textContent='Edit Deal';
+  window.scrollTo({top:0,behavior:'smooth'});toast('Editing: '+p.name);
+}
+async function delProd(k){
+  if(!confirm('Delete "'+prods[k]?.name+'"?'))return;
+  await fetch(`${DB}/${k}.json`,{method:'DELETE'});toast('Deleted');loadProds();
+}
+function clearForm(){
+  ['f-name','f-brand','f-price','f-orig','f-url','f-qty','f-sizes','f-img','f-eid'].forEach(i=>document.getElementById(i).value='');
+  ['f-cat','f-store','f-tag'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('ftitle').textContent='Add New Deal';
+}
+
+// PENDING DEALS FUNCTIONS
+async function loadPending(){
+  const res=await fetch(PENDING_DB+'.json').catch(()=>({json:()=>({})}));
+  pending=await res.json()||{};
+  const keys=Object.keys(pending);
+  document.getElementById('pending-count').textContent=keys.length;
+  document.getElementById('pending-badge').textContent=keys.length;
+  
+  if(!keys.length){
+    document.getElementById('pending-tb').innerHTML='<tr><td colspan="6" class="empty-row">No pending deals</td></tr>';
+    return;
+  }
+  
+  document.getElementById('pending-tb').innerHTML=keys.map(key=>{
+    const d=pending[key];
+    return `<tr>
+      <td><strong>${d.name}</strong><br><small style="color:#888">${d.brand}</small></td>
+      <td>${d.store}</td>
+      <td>₦${d.price.toLocaleString()}</td>
+      <td>${new Date(d.submittedAt).toLocaleDateString()}</td>
+      <td>${d.submitterEmail || '—'}</td>
+      <td>
+        <button class="btn btn-green btn-sm" onclick="approveDeal('${key}')">✓ Approve</button>
+        <button class="btn btn-red btn-sm" onclick="rejectDeal('${key}')">✗ Reject</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadPendingFull(){
+  await loadPending();
+  const keys=Object.keys(pending);
+  if(!keys.length){
+    document.getElementById('pending-full-tb').innerHTML='<tr><td colspan="8" class="empty-row">No pending deals</td></tr>';
+    return;
+  }
+  
+  document.getElementById('pending-full-tb').innerHTML=keys.map(key=>{
+    const d=pending[key];
+    return `<tr>
+      <td><strong>${d.name}</strong></td>
+      <td>${d.brand}</td>
+      <td>${d.category}</td>
+      <td>${d.store}</td>
+      <td>₦${d.price.toLocaleString()}</td>
+      <td>${new Date(d.submittedAt).toLocaleDateString()}</td>
+      <td>${d.submitterEmail || '—'}</td>
+      <td>
+        <button class="btn btn-green btn-sm" onclick="approveDeal('${key}')">✓ Approve</button>
+        <button class="btn btn-red btn-sm" onclick="rejectDeal('${key}')">✗ Reject</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function approveDeal(key){
+  const res=await fetch(`${PENDING_DB}/${key}.json`);
+  const deal=await res.json();
+  
+  // Add to products
+  await fetch(`${DB}/${key}.json`,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      ...deal,
+      status:'approved',
+      approvedAt:new Date().toISOString(),
+      lastUpdated:new Date().toISOString()
+    })
+  });
+  
+  // Remove from pending
+  await fetch(`${PENDING_DB}/${key}.json`,{method:'DELETE'});
+  
+  toast('✅ Deal approved and published!');
+  loadPending();
+  if(document.getElementById('p-deals').classList.contains('on')) loadProds();
+  if(document.getElementById('p-pending').classList.contains('on')) loadPendingFull();
+}
+
+async function rejectDeal(key){
+  if(!confirm('Reject this deal?')) return;
+  await fetch(`${PENDING_DB}/${key}.json`,{method:'DELETE'});
+  toast('Deal rejected');
+  loadPending();
+  if(document.getElementById('p-pending').classList.contains('on')) loadPendingFull();
+}
+
+async function fOrds(){const r=await fetch(ORDERS_DB+'.json').catch(()=>({json:()=>({})}));orders=await r.json()||{};}
+async function loadOrds(){await fOrds();renderOrds(orders);}
+function renderOrds(data){
+  const keys=Object.keys(data||{});
+  document.getElementById('ord-tb').innerHTML=!keys.length
+    ?'<tr class="empty-row"><td colspan="9">No orders yet</td></tr>'
+    :keys.sort((a,b)=>new Date(data[b].date)-new Date(data[a].date)).map(k=>{
+        const o=data[k];
+        return `<tr>
+          <td style="font-size:10px;color:var(--ink4);font-family:monospace">${(o.ref||'').slice(0,12)}…</td>
+          <td style="font-weight:600">${o.customerName||'—'}</td>
+          <td style="font-size:11px;color:var(--ink3)">${o.email||'—'}</td>
+          <td style="font-size:11px;color:var(--ink3)">${o.phone||'—'}</td>
+          <td>${(o.items||[]).length}</td>
+          <td style="font-weight:700">${fmt(o.total||0)}</td>
+          <td style="color:var(--green);font-weight:700">${fmt(o.myProfit||0)}</td>
+          <td><span class="bdg bdg-paid">Paid</span></td>
+          <td style="font-size:11px;color:var(--ink4)">${o.date?new Date(o.date).toLocaleDateString('en-NG'):'—'}</td>
+        </tr>`;
+      }).join('');
+}
+function filterOrds(){
+  const q=document.getElementById('osearch').value.toLowerCase(),f={};
+  Object.keys(orders).forEach(k=>{const o=orders[k];if((o.customerName+o.ref+o.email||'').toLowerCase().includes(q))f[k]=o;});
+  renderOrds(f);
+}
+
+// SETTINGS FUNCTIONS
+async function saveAffiliateId(){
+  const id=document.getElementById('jumia-affiliate').value.trim();
+  if(!id){toast('Please enter your Jumia affiliate ID');return;}
+  await fetch(`${CONFIG_DB}/jumiaAffiliate.json`,{method:'PUT',body:JSON.stringify(id)});
+  toast('✅ Affiliate ID saved!');
+}
+
+async function saveRate(){
+  const rate=document.getElementById('usd-rate').value;
+  await fetch(`${CONFIG_DB}/usdRate.json`,{method:'PUT',body:JSON.stringify(Number(rate))});
+  toast('✅ Rate saved!');
+}
+
+async function savePaystack(){
+  const key=document.getElementById('paystack-key').value;
+  await fetch(`${CONFIG_DB}/paystackKey.json`,{method:'PUT',body:JSON.stringify(key)});
+  toast('✅ Paystack key saved!');
+}
+
+async function savePlatform(){
+  const name=document.getElementById('platform-name').value;
+  const email=document.getElementById('contact-email').value;
+  const tagline=document.getElementById('tagline').value;
+  await fetch(`${CONFIG_DB}/platform.json`,{method:'PUT',body:JSON.stringify({name,email,tagline})});
+  toast('✅ Platform settings saved!');
+}
+
+/* ── FULL SEED DATASET ──────────────────────────────────────── */
+const ALL=[
+  {name:'Nike Air Max 270',brand:'Nike',category:'Sneakers',price:89500,originalPrice:115000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/dd2caefd-4e0e-4e7b-8a3e-19e40ef0de0c/air-max-270-shoes-2V5C4p.png',sizes:['40','41','42','43','44'],tag:'HOT',quantity:12},
+  {name:'Nike Air Force 1 Low',brand:'Nike',category:'Sneakers',price:75000,originalPrice:96000,store:'Konga',storeUrl:'https://www.konga.com/category/sneakers-4486',image:'https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/b7d9211c-26e7-431a-ac24-b0540fb3c00f/air-force-1-07-shoe-WrLlWX.png',sizes:['39','40','41','42','43','44'],tag:null,quantity:18},
+  {name:'Nike Dunk Low Retro',brand:'Nike',category:'Sneakers',price:82000,originalPrice:105000,store:'Garmspot',storeUrl:'https://www.garmspot.com/',image:'https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/9c470c0c-0d6b-4fe1-99de-2aeeae78e44a/dunk-low-retro-shoes-Cdq4JP.png',sizes:['39','40','41','42','43','44'],tag:'HOT',quantity:7},
+  {name:'Nike Air Jordan 1 Retro High OG',brand:'Jordan',category:'Sneakers',price:185000,originalPrice:225000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0/85613f1d-c7b2-4acf-a3de-c49e2caf86e4/air-jordan-1-retro-high-og-shoes-l5NzxJ.png',sizes:['40','41','42','43'],tag:'LIMITED',quantity:3},
+  {name:'Adidas Ultraboost 22',brand:'Adidas',category:'Sneakers',price:112000,originalPrice:148000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/a32a9d9bbba04cef87b7af7800d72f72_9366/Ultraboost_22_Shoes_Black_GZ0127_01_standard.jpg',sizes:['40','41','42','43','44','45'],tag:'NEW',quantity:8},
+  {name:'Adidas Yeezy Boost 350 V2',brand:'Adidas',category:'Sneakers',price:165000,originalPrice:210000,store:'Garmspot',storeUrl:'https://www.garmspot.com/',image:'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/9a4c4e71938c40eb8c044c3b5cd5a07d_9366/Yeezy_Boost_350_V2_Shoes_White_EG7766_01_standard.jpg',sizes:['40','41','42','43'],tag:'LIMITED',quantity:3},
+  {name:'Adidas Stan Smith',brand:'Adidas',category:'Sneakers',price:58000,originalPrice:74000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/7ed0855435194229a9d5aad400c40610_9366/Stan_Smith_Shoes_White_FX5502_01_standard.jpg',sizes:['38','39','40','41','42','43'],tag:null,quantity:25},
+  {name:'Puma RS-X Softcase',brand:'Puma',category:'Sneakers',price:52000,originalPrice:68000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'',sizes:['39','40','41','42','43','44'],tag:'SALE',quantity:15},
+  {name:'New Balance 574 Classic',brand:'New Balance',category:'Sneakers',price:68000,originalPrice:88000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'https://nb.scene7.com/is/image/NB/ml574evg_nb_02_i?$pdpflexf2$&qlt=80&fmt=webp&wid=880&hei=660',sizes:['40','41','42','43','44'],tag:null,quantity:20},
+  {name:'Nike Pegasus 40',brand:'Nike',category:'Sneakers',price:88000,originalPrice:110000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/men-sneakers/',image:'https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/e78b3b2f-6d7c-47a1-a3f9-c3c2db8bee02/pegasus-40-road-running-shoes-Dz7L3T.png',sizes:['39','40','41','42','43','44'],tag:null,quantity:10},
+  {name:'Air Jordan 4 Retro White Cement',brand:'Jordan',category:'Sneakers',price:210000,originalPrice:260000,store:'Garmspot',storeUrl:'https://www.garmspot.com/',image:'',sizes:['40','41','42','43'],tag:'LIMITED',quantity:4},
+  {name:'Air Jordan 11 Retro',brand:'Jordan',category:'Sneakers',price:195000,originalPrice:240000,store:'Konga',storeUrl:'https://www.konga.com/category/sneakers-4486',image:'',sizes:['40','41','42','43'],tag:'LIMITED',quantity:2},
+  {name:'iPhone 17 Pro Max 256GB',brand:'Apple',category:'Smartphones',price:2720000,originalPrice:3100000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-pro-finish-select-202409-6-9inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1724927585753',sizes:[],tag:'HOT',quantity:5},
+  {name:'iPhone 17 Pro 128GB',brand:'Apple',category:'Smartphones',price:2100000,originalPrice:2450000,store:'Konga',storeUrl:'https://www.konga.com/category/ios-phones-7541',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-pro-finish-select-202409-6-3inch-blacktitanium?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1725297088866',sizes:[],tag:'HOT',quantity:8},
+  {name:'iPhone 16 256GB',brand:'Apple',category:'Smartphones',price:1750000,originalPrice:2100000,store:'Slot',storeUrl:'https://slot.ng/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-16-finish-select-202409-6-1inch-black?wid=5120&hei=2880&fmt=p-jpg&qlt=80&.v=1723843673964',sizes:[],tag:'SALE',quantity:12},
+  {name:'Samsung Galaxy S25 Ultra 256GB',brand:'Samsung',category:'Smartphones',price:1499000,originalPrice:1850000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'https://images.samsung.com/is/image/samsung/p6pim/levant/2501/gallery/levant-galaxy-s25-ultra-s938-sm-s938bzageub-thumb-544329452?$650_519_PNG$',sizes:[],tag:'NEW',quantity:6},
+  {name:'Samsung Galaxy S24 FE',brand:'Samsung',category:'Smartphones',price:780000,originalPrice:960000,store:'Konga',storeUrl:'https://www.konga.com/',image:'https://images.samsung.com/is/image/samsung/p6pim/levant/2410/gallery/levant-galaxy-s24-fe-s721-sm-s721bzageub-thumb-542219183?$650_519_PNG$',sizes:[],tag:'SALE',quantity:14},
+  {name:'Samsung Galaxy A56 5G',brand:'Samsung',category:'Smartphones',price:340000,originalPrice:420000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'https://images.samsung.com/is/image/samsung/p6pim/levant/2503/gallery/levant-galaxy-a56-5g-a566-sm-a566ezaaeub-thumb-544818803?$650_519_PNG$',sizes:[],tag:'NEW',quantity:20},
+  {name:'Tecno Camon 30 Pro 5G',brand:'Tecno',category:'Smartphones',price:215000,originalPrice:270000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'',sizes:[],tag:null,quantity:18},
+  {name:'Infinix Note 40 Pro+ 5G',brand:'Infinix',category:'Smartphones',price:195000,originalPrice:250000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'',sizes:[],tag:'SALE',quantity:22},
+  {name:'Xiaomi 14T Pro 256GB',brand:'Xiaomi',category:'Smartphones',price:680000,originalPrice:850000,store:'Konga',storeUrl:'https://www.konga.com/',image:'https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-14t-pro/m/d8b5a3c5f52b94a5ddbaa793cb6f90b4.png',sizes:[],tag:'NEW',quantity:7},
+  {name:'Xiaomi Redmi Note 14 Pro',brand:'Xiaomi',category:'Smartphones',price:220000,originalPrice:280000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'',sizes:[],tag:null,quantity:16},
+  {name:'Tecno Phantom X3 Pro',brand:'Tecno',category:'Smartphones',price:380000,originalPrice:480000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/mobile-phones/',image:'',sizes:[],tag:'NEW',quantity:10},
+  {name:'MacBook Pro M4 14" 512GB',brand:'Apple',category:'Laptops',price:2950000,originalPrice:3500000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mbp14-spaceblack-select-202410?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1728916322198',sizes:[],tag:'HOT',quantity:3},
+  {name:'MacBook Air M3 15" 256GB',brand:'Apple',category:'Laptops',price:1890000,originalPrice:2300000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mba15-midnight-select-202402?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1708367688034',sizes:[],tag:'HOT',quantity:5},
+  {name:'MacBook Air M2 13" 256GB',brand:'Apple',category:'Laptops',price:1450000,originalPrice:1800000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/computing/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/mba13-midnight-select-202402?wid=904&hei=840&fmt=jpeg&qlt=90&.v=1708367688034',sizes:[],tag:'SALE',quantity:7},
+  {name:'Dell XPS 15 Core i9 RTX 4060',brand:'Dell',category:'Laptops',price:2400000,originalPrice:2900000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'',sizes:[],tag:'NEW',quantity:4},
+  {name:'HP Pavilion 15 Core i7',brand:'HP',category:'Laptops',price:620000,originalPrice:790000,store:'Konga',storeUrl:'https://www.konga.com/category/laptops-5230-5230',image:'',sizes:[],tag:null,quantity:9},
+  {name:'Lenovo IdeaPad 5 Core i5',brand:'Lenovo',category:'Laptops',price:480000,originalPrice:605000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/computing/',image:'https://psrefstatic.lenovo.com/content/dam/products/Laptops/IdeaPad/IdeaPad-5-gen-8-14-inch-Intel/main-visual/lenovo-laptop-ideapad-5-14-gen8-intel-main-visual.png',sizes:[],tag:'SALE',quantity:12},
+  {name:'ASUS ROG Strix G16 RTX 4070',brand:'ASUS',category:'Laptops',price:1950000,originalPrice:2400000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'',sizes:[],tag:'HOT',quantity:3},
+  {name:'Acer Aspire 5 Core i5',brand:'Acer',category:'Laptops',price:365000,originalPrice:460000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/computing/',image:'',sizes:[],tag:'SALE',quantity:11},
+  {name:'Lenovo ThinkPad X1 Carbon',brand:'Lenovo',category:'Laptops',price:1680000,originalPrice:2100000,store:'Konga',storeUrl:'https://www.konga.com/category/laptops-5230-5230',image:'',sizes:[],tag:'NEW',quantity:4},
+  {name:'PlayStation 5 Slim Disc Edition',brand:'Sony',category:'Gaming',price:650000,originalPrice:750000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/gaming/',image:'https://gmedia.playstation.com/is/image/SIEPDC/ps5-product-thumbnail-01-en-14sep21?$facebook$',sizes:[],tag:'HOT',quantity:7},
+  {name:'PlayStation 5 Slim Digital',brand:'Sony',category:'Gaming',price:540000,originalPrice:640000,store:'Konga',storeUrl:'https://www.konga.com/',image:'https://gmedia.playstation.com/is/image/SIEPDC/ps5-digital-product-thumbnail-01-en-14sep21?$facebook$',sizes:[],tag:'SALE',quantity:5},
+  {name:'Xbox Series X 1TB',brand:'Microsoft',category:'Gaming',price:590000,originalPrice:690000,store:'Slot',storeUrl:'https://slot.ng/',image:'https://compass-ssl.xbox.com/assets/ac/04/ac04595b-5eee-4b0e-b7db-4ab05e5e5e58.jpg?n=Console_Hero-Render-0_Home_XSX.jpg',sizes:[],tag:null,quantity:5},
+  {name:'Xbox Series S 512GB',brand:'Microsoft',category:'Gaming',price:340000,originalPrice:415000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/gaming/',image:'https://compass-ssl.xbox.com/assets/bc/03/bc03fb3f-a1a9-4b86-9843-2a9cc5d9a594.jpg?n=Console_Hero-Render-0_Home_XSS.jpg',sizes:[],tag:'SALE',quantity:8},
+  {name:'Nintendo Switch OLED',brand:'Nintendo',category:'Gaming',price:310000,originalPrice:380000,store:'Konga',storeUrl:'https://www.konga.com/',image:'https://www.nintendo.com/content/dam/noa/en_US/hardware/switch/switch-oled-model/hardware-specs/oled-model-white-large.png',sizes:[],tag:'NEW',quantity:10},
+  {name:'Meta Quest 3 128GB',brand:'Meta',category:'Gaming',price:450000,originalPrice:560000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'',sizes:[],tag:'NEW',quantity:4},
+  {name:'DualSense Edge Controller',brand:'Sony',category:'Gaming',price:95000,originalPrice:125000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/gaming/',image:'https://gmedia.playstation.com/is/image/SIEPDC/dualsense-edge-thumbnail-01-en-29sep22?$facebook$',sizes:[],tag:null,quantity:15},
+  {name:'PS5 God of War Bundle',brand:'Sony',category:'Gaming',price:720000,originalPrice:860000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/gaming/',image:'',sizes:[],tag:'LIMITED',quantity:3},
+  {name:"LG 55\" OLED C4 4K Smart TV",brand:'LG',category:'Electronics',price:1250000,originalPrice:1600000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/electronics/',image:'',sizes:[],tag:'HOT',quantity:4},
+  {name:"Samsung 65\" QLED 4K Smart TV",brand:'Samsung',category:'Electronics',price:980000,originalPrice:1250000,store:'Konga',storeUrl:'https://www.konga.com/',image:'',sizes:[],tag:'SALE',quantity:5},
+  {name:'Sony WH-1000XM5 Headphones',brand:'Sony',category:'Electronics',price:220000,originalPrice:290000,store:'Slot',storeUrl:'https://slot.ng/',image:'https://www.sony.com/image/5d02da5df552836db894cead8a68f5f3?fmt=png-alpha&wid=660',sizes:[],tag:'HOT',quantity:15},
+  {name:'Apple AirPods Pro 2nd Gen',brand:'Apple',category:'Electronics',price:185000,originalPrice:240000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/electronics/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MQD83?wid=2000&hei=2000&fmt=jpeg&qlt=95&.v=1660803972361',sizes:[],tag:null,quantity:18},
+  {name:'Samsung Galaxy Watch 7',brand:'Samsung',category:'Electronics',price:195000,originalPrice:250000,store:'Konga',storeUrl:'https://www.konga.com/',image:'https://images.samsung.com/is/image/samsung/p6pim/levant/2407/gallery/levant-galaxy-watch7-l300-sm-l300nzaaaro-thumb-541542875?$650_519_PNG$',sizes:[],tag:'NEW',quantity:9},
+  {name:'Apple Watch Series 10 GPS',brand:'Apple',category:'Electronics',price:420000,originalPrice:530000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/watch-s10-aluminum-jetsblack-case-jetsblack-sport-band_VW_34FR_WF_CO?wid=1400&hei=1400&fmt=jpeg&qlt=90',sizes:[],tag:'NEW',quantity:6},
+  {name:'Dyson V15 Detect Absolute',brand:'Dyson',category:'Electronics',price:380000,originalPrice:460000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/electronics/',image:'',sizes:[],tag:null,quantity:8},
+  {name:'Oraimo FreePods 4',brand:'Oraimo',category:'Electronics',price:18500,originalPrice:25000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/electronics/',image:'',sizes:[],tag:'SALE',quantity:80},
+  {name:'Samsung 500L Side-by-Side Fridge',brand:'Samsung',category:'Electronics',price:680000,originalPrice:860000,store:'Konga',storeUrl:'https://www.konga.com/',image:'',sizes:[],tag:null,quantity:4},
+  {name:'Sonos Era 300 Wireless Speaker',brand:'Sonos',category:'Electronics',price:290000,originalPrice:380000,store:'3C Hub',storeUrl:'https://www.3chub.com/',image:'',sizes:[],tag:'NEW',quantity:6},
+  {name:'Xiaomi Smart Band 9 Pro',brand:'Xiaomi',category:'Electronics',price:42000,originalPrice:58000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/electronics/',image:'',sizes:[],tag:'SALE',quantity:35},
+  {name:'Anker 737 PowerBank 140W',brand:'Anker',category:'Electronics',price:55000,originalPrice:72000,store:'Jumia',storeUrl:'https://www.jumia.com.ng/electronics/',image:'',sizes:[],tag:null,quantity:22},
+];
+
+async function seedAll(){
+  const logEl=document.getElementById('seed-log');logEl.innerHTML='';
+  function lg(m,t){const d=document.createElement('div');d.className=t;d.textContent=`[${new Date().toLocaleTimeString()}] ${m}`;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+  lg('Seeding '+ALL.length+' deals to Firebase…','inf');
+  let ok=0;
+  for(let i=0;i<ALL.length;i++){
+    const p=ALL[i];
+    const id=`${p.category}-${p.brand}-${p.name}`.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9-]/g,'');
+    try{
+      await fetch(`${DB}/${id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,lastUpdated:new Date().toISOString()})});
+      ok++;lg(`✔ [${p.category}] ${p.name} — ${fmt(p.price)} on ${p.store}`,'ok');
+      document.getElementById('seed-prog').style.width=Math.round((i+1)/ALL.length*100)+'%';
+      await new Promise(r=>setTimeout(r,100));
+    }catch(e){lg(`✘ Failed: ${p.name}`,'err');}
+  }
+  lg(`Done! ${ok}/${ALL.length} deals are now LIVE.`,'ok');
+  toast('🚀 '+ok+' deals are now live!');loadProds();
+}
+
+function scLog(m,t){const el=document.getElementById('sc-log');const d=document.createElement('div');d.className=t;d.textContent=`[${new Date().toLocaleTimeString()}] ${m}`;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+async function runScrape(){
+  const cat=document.getElementById('sc-cat').value,lim=document.getElementById('sc-lim').value;
+  document.getElementById('sc-log').innerHTML='';document.getElementById('sc-prog').style.width='0%';
+  let items=cat==='all'?ALL:ALL.filter(d=>d.category===cat);
+  if(lim!=='all')items=items.slice(0,parseInt(lim));
+  scLog('Importing '+items.length+' deals…','inf');let ok=0;
+  for(let i=0;i<items.length;i++){
+    const p=items[i],id=`${p.category}-${p.brand}-${p.name}`.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9-]/g,'');
+    try{await fetch(`${DB}/${id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,lastUpdated:new Date().toISOString()})});ok++;scLog(`✔ ${p.name}`,'ok');document.getElementById('sc-prog').style.width=Math.round((i+1)/items.length*100)+'%';await new Promise(r=>setTimeout(r,100));}
+    catch(e){scLog(`✘ ${p.name}`,'err');}
+  }
+  scLog(`Done! ${ok} imported.`,'ok');toast('✅ '+ok+' deals imported!');loadProds();
+}
+async function bulkImport(){
+  const raw=document.getElementById('bulk-json').value.trim();if(!raw){toast('Paste JSON first');return;}
+  let data;try{data=JSON.parse(raw);}catch(e){toast('❌ Invalid JSON');return;}
+  if(!Array.isArray(data)){toast('❌ Must be array');return;}
+  let cnt=0;
+  for(const p of data){if(!p.name||!p.price)continue;const id=`${p.category||'deal'}-${p.brand||'x'}-${p.name}`.replace(/\s+/g,'-').toLowerCase().replace(/[^a-z0-9-]/g,'');await fetch(`${DB}/${id}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,lastUpdated:new Date().toISOString()})});cnt++;}
+  toast('✅ '+cnt+' deals imported!');loadProds();
+}
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800);}
+loadDash();
+loadPending(); // Load pending deals on startup
+</script>
+</body>
+</html>
