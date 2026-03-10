@@ -1,0 +1,33 @@
+{
+  "name": "sneakerai",
+  "version": "1.0.0",
+  "description": "Sneaker scraping and dashboard project",
+  "main": "sneakerBot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node sneakerBot.js",
+    "bot": "node sneakerBot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sneaker",
+    "scraper",
+    "firebase",
+    "puppeteer",
+    "sneakz"
+  ],
+  "author": "MEDIA MANAGER",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "body-parser": "^2.2.2",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.6",
+    "cors-anywhere": "^0.4.4",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.7.0",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^24.38.0"
+  }
+}
